@@ -1,7 +1,10 @@
 from pprint import pprint
+from dec import log
 
 
+@log('logs/perfomance.log')
 def open_file():
+    cook_book = {}
     quantity = 0
     recipes_book = []
     recipes_book.append([])
@@ -19,11 +22,11 @@ def open_file():
             recipe = dish[ingredients].split(' | ')
             ingred_dict = {'ingredient_name': recipe[0], 'quantity': int(recipe[1]), 'measure': recipe[2]}
             cook_book[dish[0]].append(ingred_dict)
-    print('Книга рецептов: ')
-    pprint(cook_book)
+    return cook_book
 
 
-def get_shop_list_by_dishes(dishes, person_count):
+@log('logs/perfomance_2.log')
+def get_shop_list_by_dishes(cook_book, dishes, person_count):
     dishes_book = {}
     for dish in dishes:
         for ingredient in cook_book[dish]:
@@ -31,10 +34,16 @@ def get_shop_list_by_dishes(dishes, person_count):
                 dishes_book.update({ingredient['ingredient_name']: {'measure': ingredient['measure'], 'quantity': ingredient['quantity'] * person_count}})
             else:
                 dishes_book[ingredient['ingredient_name']]['quantity'] += ingredient['quantity'] * person_count
+    return dishes, dishes_book
+
+
+def main():
+    cook_book = open_file()
+    print('Книга рецептов: ')
+    pprint(cook_book)
+    dishes, dishes_book = get_shop_list_by_dishes(cook_book, ['Омлет', 'Запеченный картофель'], 2)
     print(f'\nКоличество ингредиентов для блюд: {dishes}:\n')
     pprint(dishes_book)
 
 
-cook_book = {}
-open_file()
-get_shop_list_by_dishes(['Омлет', 'Запеченный картофель'], 2)
+main()
